@@ -1,0 +1,113 @@
+---
+- hosts: bbdd
+  become: yes
+  
+  vars_files:
+  - vars.yml
+
+  pre_tasks:
+    - name: "Instalar paquetes"
+      dnf: "name={{ item }} state=present"
+      with_items:
+        - postgresql
+        - postgresql-server
+        - python3
+        - python
+        - python3-devel
+        - python3-devel
+        - postgresql-devel
+
+    - name: "Nuevo repo"
+      shell: sudo yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-$(rpm -E '%{rhel}').noarch.rpm --skip-broken
+    
+    - name: "Epel-release"
+      shell: sudo yum reinstall -y  epel-release 
+
+    - name: "Script"
+      shell: sudo yum reinstall -y python-pip 
+        
+    - name: "Nuevo repo 2"
+      shell: sudo yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm 
+
+    - name: "Instalar paquetes de Python"
+      yum: "name={{ item }} state=present"
+      with_items:
+        - python-psycopg2
+
+  tasks:
+    - name: "Check PostgreSQL"
+      ansible.builtin.stat:
+        path: "/var/lib/pgsql/data/pg_hba.conf"
+      register: postgres_data
+
+    - name: "Inicializar PostgreSQL"
+      shell: "postgresql-setup initdb"
+      when: not postgres_data.stat.exists
+
+    - name: "Iniciar y habilitar servicios"
+      service: "name={{ item }} state=started enabled=yes"
+      with_items:
+        - postgresql
+
+    - name: "Crear base de datos"
+      postgresql_db:
+        state: present
+        name: "{{ db_name }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Crear usuario de la base de datos"
+      postgresql_user:
+        state: present
+        name: "{{ db_user }}"
+        password: "{{ db_password }}"
+      become: yes
+      become_user: postgres
+
+    - name: "Conceder acceso a la base de datos al usuario"
+      postgresql_privs:
+        type: database
+        database: "{{ db_name }}"
+        roles: "{{ db_user }}"
+        grant_option: no
+        privs: all
+      become: yes
+      become_user: postgres
+
+    - name: "Permitir conexion md5 para el usuario de la base de datos"
+      postgresql_pg_hba:
+        dest: "~/data/pg_hba.conf"
+        contype: host
+        databases: all
+        method: md5
+        users: "{{ db_user }}"
+        create: true
+      become: yes
+      become_user: postgres
+      notify: restart postgres
+   
+    - name: "Crear usuario postgres"
+      user:
+        name: postgres
+        password: '$6$1dtVPRg7ZQ9Vzu6$bjQalfq08pGIUHf/amcJ.4IXYCh8QWOiIQ1jOZJ373o70Q8gFmvOyaR6ZnqkTAYrUGsSYLJEo/mMFUWKtF0lO/'
+        groups: vagrant
+        state: present
+ 
+    - name: "Exportar script de SQL"
+      copy:
+        src: /ansible/postgres-ansible/scripts-SQL/prueba.sql            
+        dest: /tmp/prueba.sql
+        owner: vagrant
+        group: vagrant
+
+    - name: "Conceder permisos a prueba.sql"
+      shell: sudo chmod -R a+rwX /tmp/prueba.sql
+
+    - name: "Importar datos a la base de datos desde un .sql"
+      become: true
+      become_user: postgres
+      shell: psql {{ db_name }} < /tmp/prueba.sql        
+
+  handlers:
+    - name: restart postgres
+      service: name=postgresql state=restarted
