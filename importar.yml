@@ -1,0 +1,24 @@
+---
+- hosts: bbdd
+  become: yes
+  become_user: vagrant
+
+  tasks:
+    - name: "Crear base de datos"
+      postgresql_db:
+        state: present
+        name: "basededatos1"
+      become: yes
+      become_user: postgres
+
+    - name: "Copiar script"
+      copy:
+        src: /ansible/postgres-ansible/scripts-SQL/datos1.sql
+        dest: /tmp/datos1.sql
+        owner: vagrant
+        group: vagrant
+
+    - name: "Importar datos desde el SQL"
+      become: true
+      become_user: postgres
+      shell: psql basededatos1 < /tmp/datos1.sql
