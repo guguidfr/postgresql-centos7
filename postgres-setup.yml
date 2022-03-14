@@ -93,20 +93,20 @@
         groups: vagrant
         state: present
  
-    - name: "Exportar script de SQL"
-      copy:
-        src: /ansible/postgres-ansible/scripts-SQL/prueba.sql            
-        dest: /tmp/prueba.sql
-        owner: vagrant
-        group: vagrant
+    #- name: "Exportar script de SQL"
+      #copy:
+        #src: /ansible/postgres-ansible/scripts-SQL/prueba.sql            
+        #dest: /tmp/prueba.sql
+        #owner: vagrant
+        #group: vagrant
 
-    - name: "Conceder permisos a prueba.sql"
-      shell: sudo chmod -R a+rwX /tmp/prueba.sql
+    #- name: "Conceder permisos a prueba.sql"
+      #shell: sudo chmod -R a+rwX /tmp/prueba.sql
 
-    - name: "Importar datos a la base de datos desde un .sql"
-      become: true
-      become_user: postgres
-      shell: psql {{ db_name }} < /tmp/prueba.sql        
+    #- name: "Importar datos a la base de datos desde un .sql"
+      #become: true
+      #become_user: postgres
+      #shell: psql {{ db_name }} < /tmp/prueba.sql        
 
   handlers:
     - name: restart postgres
