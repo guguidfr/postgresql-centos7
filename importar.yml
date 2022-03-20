@@ -1,0 +1,24 @@
+---
+- hosts: bbdd
+  become: yes
+  become_user: vagrant
+
+  tasks:
+    - name: "Crear base de datos"
+      postgresql_db:
+        state: present
+        name: "" #escribe entre las comillas el nombre de la base de datos
+      become: yes
+      become_user: postgres
+
+    - name: "Copiar script"
+      copy:
+        src: #escribe la ruta absoluta al archivo .sql que vayas a querer copiar - Recuerda poner el nombre del archivo terminado en .sql al final
+        dest: #escribe la ruta donde quieras pegar el archivo .sql - Recuerda poner el nombre del archivo terminado en .sql al final
+        owner: vagrant
+        group: vagrant
+
+    - name: "Importar datos desde el SQL"
+      become: true
+      become_user: postgres
+      shell: psql [nombre-de-la-db-que-pusiste-antes] < [ruta-absoluta-del-archivo-de-SQL-en-la-maquina-servidor] #la ruta del archivo es la que pusiste en la linea 17
