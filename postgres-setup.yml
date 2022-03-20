@@ -93,6 +93,16 @@
         groups: vagrant
         state: present
  
+  handlers:
+    - name: restart postgres
+      service: name=postgresql state=restarted
+
+# Si quitas los comentarios de estos comandos, puedes importar un archivo SQL
+# a los servidores de base de datos que acabas de crear.
+
+# De todas formas, he creado un playbook diferente para hacer esto mismo, ya que
+# considero mejor opción serparar el hecho de crear un servidor, e importar datos.
+
     #- name: "Exportar script de SQL"
       #copy:
         #src: /ansible/postgres-ansible/scripts-SQL/prueba.sql            
@@ -107,7 +117,3 @@
       #become: true
       #become_user: postgres
       #shell: psql {{ db_name }} < /tmp/prueba.sql        
-
-  handlers:
-    - name: restart postgres
-      service: name=postgresql state=restarted
