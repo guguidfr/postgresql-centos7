@@ -8,4 +8,4 @@ El usuario que se crea en los servidores de bases de datos tiene tanto nombre co
 # importar datos a la base de datos
 Con el playbook importar.yml podrás importar un archivo .sql en el servidor de base de datos PostgreSQL que elijas.
 
-Recuerda editar el archivo con los datos que necesites.
+Recuerda editar los archivos con los datos que necesites.
