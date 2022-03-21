@@ -49,12 +49,13 @@
       with_items:
         - postgresql
 
-    - name: "Crear base de datos"
-      postgresql_db:
-        state: present
-        name: "{{ db_name }}"
-      become: yes
-      become_user: postgres
+# Quita los comentarios en esta task para crear una base de datos junto con los servidores
+    #- name: "Crear base de datos"
+      #postgresql_db:
+        #state: present
+        #name: "{{ db_name }}"
+      #become: yes
+      #become_user: postgres
 
     - name: "Crear usuario de la base de datos"
       postgresql_user:
