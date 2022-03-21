@@ -3,6 +3,9 @@
   become: yes
   become_user: vagrant
 
+  vars_files:
+  - vars-importar.yml
+
   tasks:
     - name: "Crear base de datos"
       postgresql_db:
