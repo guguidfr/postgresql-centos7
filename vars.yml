@@ -1,3 +1,3 @@
 db_user: postgres
 db_password: postgres
-db_name: testdb
+db_name: bdprueba1 #Este campo es necesario si quieres crear una base da datos junto con los servidores
