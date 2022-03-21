@@ -7,18 +7,18 @@
     - name: "Crear base de datos"
       postgresql_db:
         state: present
-        name: "" #escribe entre las comillas el nombre de la base de datos
+        name: "{{ nombre_bd }}" #escribe el nombre de la base de datos en vars-importar.yml
       become: yes
       become_user: postgres
 
     - name: "Copiar script"
       copy:
-        src: #escribe la ruta absoluta al archivo .sql que vayas a querer copiar - Recuerda poner el nombre del archivo terminado en .sql al final
-        dest: #escribe la ruta donde quieras pegar el archivo .sql - Recuerda poner el nombre del archivo terminado en .sql al final
+        src: "{{ from }}" #escribe la ruta absoluta al archivo .sql en el nodo gestor en vars-importar.yml
+        dest: "{{ to }}" #escribe la ruta absoluta al archivo .sql en el servdor en vars-importar.yml
         owner: vagrant
         group: vagrant
 
     - name: "Importar datos desde el SQL"
       become: true
       become_user: postgres
-      shell: psql [nombre-de-la-db-que-pusiste-antes] < [ruta-absoluta-del-archivo-de-SQL-en-la-maquina-servidor] #la ruta del archivo es la que pusiste en la linea 17
+      shell: psql [tu-base-de-datos] < [ubicacion-del-sql] #misma base de datos que {{ nombre_bd }} y misma ruta que {{ to }}
