@@ -1,0 +1,4 @@
+---
+nombre_bd: bdprueba1 #Cambia el nombre si es necesario
+from: /tmp/datos-de-ejemplo.sql #Cambia la ruta si es necesario
+to: /tmp/datos-de-ejemplo.sql #Cambia la ruta si es necesario
